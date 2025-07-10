@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
             .allowedOrigins(
                 "http://localhost:8080",
-                "https://menu-001.vercel.app",
+                "https://menu-001.vercel.app/",
                 "http://localhost",
                 "http://127.0.0.1",
                 "http://localhost:8083" // ← AJOUTE CETTE LIGNE
