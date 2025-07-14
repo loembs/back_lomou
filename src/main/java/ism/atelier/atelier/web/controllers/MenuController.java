@@ -23,19 +23,19 @@ public class MenuController {
     @Autowired
     private UploadService uploadService;
 
-    @GetMapping
+    @GetMapping(produces = "application/json; charset=UTF-8")
     public List<CategoryResponseDto> getMenu() {
         return menuService.getMenu().stream()
             .map(CategoryMapper::toDto)
             .collect(Collectors.toList());
     }
 
-    @PostMapping("/plate")
+    @PostMapping(value = "/plate", produces = "application/json; charset=UTF-8")
     public ResponseEntity<Plate> addPlate(@RequestBody Plate plate) {
         return ResponseEntity.ok(menuService.savePlate(plate));
     }
 
-    @PostMapping("/plate/upload")
+    @PostMapping(value = "/plate/upload", produces = "application/json; charset=UTF-8")
     public ResponseEntity<Plate> uploadAndCreatePlate(@RequestParam("image") MultipartFile image,
                                                       @RequestParam("name") String name,
                                                       @RequestParam("description") String description,
