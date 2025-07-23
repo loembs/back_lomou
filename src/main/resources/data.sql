@@ -1,14 +1,14 @@
 -- Catégories
+-- Catégories
 INSERT INTO category (id, name) VALUES 
-('entrees', 'Entrées'),
-('plats', 'Plats Principaux'),
-('desserts', 'Desserts');
+('boubous', 'Boubous'),
+('robes', 'Robes'),
+('bijoux', 'Bijoux'),
+('accessoires', 'Accessoires');
 
--- Plats
-INSERT INTO plate (id, name, description, price, image_url, model3d_url, model_usdz_url, has_ar, difficulty, category_id) VALUES
-(1, 'Salade de Quinoa', 'Quinoa bio, légumes grillés', 6000, 'https://res.cloudinary.com/dprbhsvxl/image/upload/v1751995446/plat-espagnol-paella-1024x743_zwos4i.jpg', 'https://enfgjsucpmsmrqxencxz.supabase.co/storage/v1/object/public/menu//Seafood_Feast_Paella_0708172133_texture.glb', 'https://enfgjsucpmsmrqxencxz.supabase.co/storage/v1/object/public/menu//Seafood_Feast_Paella_0708171431_texture.usdz', true, 'Végétarien', 'entrees'),
-(2, 'Tartare de Saumon', 'Saumon frais, avocat, citron vert', 18000, 'https://res.cloudinary.com/.../plat2.jpg', '/models/plat2.glb', '/models/plat2.usdz', true, 'Frais', 'entrees'),
-(3, 'Yassa de Poulet', 'Poulet mariné aux oignons', 2200, 'https://res.cloudinary.com/.../yassa.jpg', '/models/yassa.glb', '/models/yassa.usdz', true, 'Spécialité Africaine', 'plats'),
-(4, 'Côte de Bœuf', 'Côte de bœuf 400g, sauce échalotes', 9000, 'https://res.cloudinary.com/.../boeuf.jpg', '/models/boeuf.glb', '/models/boeuf.usdz', true, 'Signature', 'plats'),
-(5, 'Curry de Légumes', 'Légumes de saison, lait de coco', 8000, 'https://res.cloudinary.com/.../curry.jpg', '/models/curry.glb', '/models/curry.usdz', true, 'Végétalien', 'plats'),
-(6, 'Tarte Tatin', 'Pommes caramélisées, glace vanille', 7500, 'https://res.cloudinary.com/.../tarte.jpg', '/models/tarte.glb', '/models/tarte.usdz', true, 'Fait Maison', 'desserts');
+
+-- Produits
+INSERT INTO plate (id, name, description, price, image_url, category_id) VALUES
+(1, 'Boubou wax brodé main', 'Boubou traditionnel confectionné à la main au Sénégal, tissu wax premium, broderies artisanales.', 25000, 'https://res.cloudinary.com/dprbhsvxl/image/upload/v1753278166/Toutes_mes_bubu_yccuc6.jpg', 'boubous'),
+(2, 'Robe longue pagne africain', 'Robe longue en pagne africain, coupe élégante, motifs colorés, idéale pour toutes occasions.', 20000, 'https://res.cloudinary.com/dprbhsvxl/image/upload/v1753278166/QUEL_TA_PHOTO_PR%C3%89F%C3%89R%C3%89E_sgdo8v.jpg', 'robes'),
+(3, 'Robe africaine', 'Robe artisanal , fabriqué à la main par des artisans sénégalais.', 15000, 'https://res.cloudinary.com/dprbhsvxl/image/upload/v1753278166/Hi_babe_cbwten.jpg', 'boubous');

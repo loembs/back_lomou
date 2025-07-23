@@ -1,0 +1,27 @@
+package ism.atelier.atelier.web.controllers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import ism.atelier.atelier.services.ProductService;
+import ism.atelier.atelier.utils.mappers.ProductMapper;
+import ism.atelier.atelier.web.dto.response.ProductResponseDto;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/product")
+public class ProductController {
+   
+    @Autowired
+    private ProductService productService;
+
+    @GetMapping(produces = "application/json; charset=UTF-8")
+    public List<ProductResponseDto> findAll() {
+        return productService.findAll().stream()
+            .map(ProductMapper::toDto)
+            .collect(Collectors.toList());
+    }
+}

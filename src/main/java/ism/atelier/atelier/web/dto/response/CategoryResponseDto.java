@@ -7,5 +7,5 @@ import java.util.List;
 public class CategoryResponseDto {
     private String id;
     private String name;
-    private List<PlateResponseDto> plates;
+    private List<ProductResponseDto> plates;
 } 

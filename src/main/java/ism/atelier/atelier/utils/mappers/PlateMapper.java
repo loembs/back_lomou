@@ -8,7 +8,7 @@ public class PlateMapper {
     public static PlateResponseDto toDto(Plate plate) {
         PlateResponseDto dto = new PlateResponseDto();
         dto.setId(plate.getId());
-        dto.setName(plate.getName());
+        dto.setName(plate.getName());    
         dto.setDescription(plate.getDescription());
         dto.setPrice(plate.getPrice());
         dto.setImageUrl(plate.getImageUrl());
