@@ -3,10 +3,8 @@ package ism.atelier.atelier.utils.mappers;
 import ism.atelier.atelier.data.models.Category;
 import ism.atelier.atelier.data.models.Product;
 import ism.atelier.atelier.web.dto.response.CategoryResponseDto;
-import ism.atelier.atelier.web.dto.response.PlateResponseDto;
 import ism.atelier.atelier.web.dto.response.ProductResponseDto;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class CategoryMapper {
@@ -14,9 +12,6 @@ public class CategoryMapper {
         CategoryResponseDto dto = new CategoryResponseDto();
         dto.setId(category.getId());
         dto.setName(category.getName());
-        if (category.getProducts()!= null) {
-            dto.setPlates(category.getProducts().stream().map(CategoryMapper::toDto).collect(Collectors.toList()));
-        }
         return dto;
     }
 
