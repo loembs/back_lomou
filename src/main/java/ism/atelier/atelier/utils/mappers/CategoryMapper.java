@@ -22,6 +22,8 @@ public class CategoryMapper {
         dto.setDescription(product.getDescription());
         dto.setPrice(product.getPrice());
         dto.setImageUrl(product.getImageUrl());
+        dto.setStock(product.getStock());
+        dto.setAvailable(product.getAvailable());
        
         return dto;
     }

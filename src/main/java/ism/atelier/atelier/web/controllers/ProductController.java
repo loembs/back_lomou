@@ -24,4 +24,27 @@ public class ProductController {
             .map(ProductMapper::toDto)
             .collect(Collectors.toList());
     }
+    @PutMapping("/{id}/stock")
+    public ResponseEntity<ProductResponseDto> updateStock(
+            @PathVariable Long id,
+            @RequestParam Integer stock) {
+        try {
+            var updatedProduct = productService.updateStock(id, stock);
+            return ResponseEntity.ok(ProductMapper.toDto(updatedProduct));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PutMapping("/{id}/availability")
+    public ResponseEntity<ProductResponseDto> updateAvailability(
+            @PathVariable Long id,
+            @RequestParam Boolean available) {
+        try {
+            var updatedProduct = productService.updateAvailability(id, available);
+            return ResponseEntity.ok(ProductMapper.toDto(updatedProduct));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
