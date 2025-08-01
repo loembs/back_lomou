@@ -48,3 +48,48 @@ WHERE id = 3;
 
 -- Vérifier l'insertion
 --SELECT id, name, price, stock, available, last_modified FROM product ORDER BY id;
+
+-- Script de création de la table users pour l'authentification
+-- Inclut tous les champs nécessaires pour JWT et OAuth
+
+-- Créer la table users si elle n'existe pas
+-- Script de création de la table users pour l'authentification
+-- Inclut tous les champs nécessaires pour JWT et OAuth
+
+-- Créer la table users si elle n'existe pas
+CREATE TABLE IF NOT EXISTS users (
+                                     id BIGSERIAL PRIMARY KEY,
+                                     email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    role VARCHAR(10) DEFAULT 'CLIENT' CHECK (role IN ('CLIENT', 'ADMIN')),
+    phone VARCHAR(20),
+    address TEXT,
+    avatar VARCHAR(500),
+    enabled BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP NULL,
+    oauth_provider VARCHAR(50),
+    oauth_id VARCHAR(255)
+    );
+
+-- Créer les index
+CREATE INDEX IF NOT EXISTS idx_email ON users (email);
+CREATE INDEX IF NOT EXISTS idx_oauth ON users (oauth_provider, oauth_id);
+CREATE INDEX IF NOT EXISTS idx_role ON users (role);
+CREATE INDEX IF NOT EXISTS idx_enabled ON users (enabled);
+
+-- Insérer un utilisateur admin par défaut (mot de passe: admin123)
+INSERT INTO users (email, password, first_name, last_name, role, enabled) VALUES
+    ('admin@loumo.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'Loumo', 'ADMIN', TRUE)
+    ON CONFLICT (email) DO NOTHING;
+
+-- Insérer quelques utilisateurs clients de test
+INSERT INTO users (email, password, first_name, last_name, role, phone, address, enabled) VALUES
+                                                                                              ('client1@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Jean', 'Dupont', 'CLIENT', '+221 77 123 45 67', 'Dakar, Sénégal', TRUE),
+                                                                                              ('client2@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Marie', 'Martin', 'CLIENT', '+221 78 987 65 43', 'Thiès, Sénégal', TRUE)
+    ON CONFLICT (email) DO NOTHING;
+
+-- Vérifier l'insertion
+SELECT id, email, first_name, last_name, role, enabled, created_at FROM users ORDER BY id;
