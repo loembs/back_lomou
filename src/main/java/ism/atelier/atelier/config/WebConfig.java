@@ -10,19 +10,18 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
+        registry.addMapping("/**")
                 .allowedOrigins(
-                        "http://localhost:8080",
-                        "http://localhost:5173", // Vite dev server
-                        "http://localhost:3000", // React dev server
                         "https://loumo-frontend.vercel.app",
-                        "http://localhost",
-                        "http://127.0.0.1",
-                        "http://localhost:8083"
+                        "http://localhost:5173",
+                        "http://localhost:3000",
+                        "http://localhost:8080"
                 )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .exposedHeaders("Authorization", "Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 
     @Bean

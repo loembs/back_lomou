@@ -67,22 +67,19 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Autoriser tous les domaines (pour le développement)
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        // Autoriser spécifiquement le domaine du frontend
+        configuration.setAllowedOrigins(List.of(
+                "https://loumo-frontend.vercel.app",
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "http://localhost:8080"
+        ));
 
         // Méthodes HTTP autorisées
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
 
         // Headers autorisés
-        configuration.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type",
-                "Accept",
-                "Origin",
-                "X-Requested-With",
-                "Access-Control-Request-Method",
-                "Access-Control-Request-Headers"
-        ));
+        configuration.setAllowedHeaders(List.of("*"));
 
         // Headers exposés au client
         configuration.setExposedHeaders(List.of(
@@ -92,7 +89,7 @@ public class SecurityConfig {
                 "Access-Control-Allow-Credentials"
         ));
 
-        // Autoriser les credentials (cookies, headers d'authentification)
+        // Autoriser les credentials
         configuration.setAllowCredentials(true);
 
         // Durée de cache pour les requêtes preflight
