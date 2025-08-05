@@ -93,3 +93,66 @@ INSERT INTO users (email, password, first_name, last_name, role, phone, address,
 
 -- Vérifier l'insertion
 SELECT id, email, first_name, last_name, role, enabled, created_at FROM users ORDER BY id;
+
+
+
+-- Script de création des tables pour la gestion des commandes
+-- Tables: orders et order_items
+
+-- Table des commandes
+CREATE TABLE IF NOT EXISTS orders (
+                                      id BIGSERIAL PRIMARY KEY,
+                                      user_id BIGINT NOT NULL,
+                                      order_number VARCHAR(50) NOT NULL UNIQUE,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    total_amount DECIMAL(10,2) NOT NULL,
+    order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shipped_date TIMESTAMP NULL,
+    delivered_date TIMESTAMP NULL,
+    shipping_address VARCHAR(500) NULL,
+    phone_number VARCHAR(20) NULL,
+    customer_name VARCHAR(100) NULL,
+    notes VARCHAR(500) NULL,
+    CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+-- Table des éléments de commande
+CREATE TABLE IF NOT EXISTS order_items (
+                                           id BIGSERIAL PRIMARY KEY,
+                                           order_id BIGINT NOT NULL,
+                                           product_id BIGINT NOT NULL,
+                                           quantity INTEGER NOT NULL,
+                                           unit_price DECIMAL(10,2) NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
+    );
+
+-- Index pour améliorer les performances
+CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_order_date ON orders(order_date);
+CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id);
+
+-- Contraintes de validation
+ALTER TABLE orders ADD CONSTRAINT chk_orders_status
+    CHECK (status IN ('PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'));
+
+ALTER TABLE orders ADD CONSTRAINT chk_orders_total_amount
+    CHECK (total_amount >= 0);
+
+ALTER TABLE order_items ADD CONSTRAINT chk_order_items_quantity
+    CHECK (quantity > 0);
+
+ALTER TABLE order_items ADD CONSTRAINT chk_order_items_unit_price
+    CHECK (unit_price >= 0);
+
+ALTER TABLE order_items ADD CONSTRAINT chk_order_items_total_price
+    CHECK (total_price >= 0);
+
+-- Commentaires pour la documentation
+COMMENT ON TABLE orders IS 'Table des commandes clients';
+COMMENT ON TABLE order_items IS 'Table des éléments de commande';
+COMMENT ON COLUMN orders.status IS 'Statut de la commande: PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED';
+COMMENT ON COLUMN orders.order_number IS 'Numéro unique de commande généré automatiquement';
