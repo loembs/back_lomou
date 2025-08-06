@@ -48,12 +48,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto request) {
-        // Vérifier si l'email existe déjà
+        // Vérifie si l'email existe déjà
         if (userService.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Créer un nouvel utilisateur
+        // Crée un nouvel utilisateur
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
@@ -65,7 +65,7 @@ public class AuthController {
 
         User savedUser = userService.registerUser(user);
 
-        // Générer le token
+        // Génére le token
         String token = jwtUtils.generateToken(savedUser, savedUser.getRole().name());
         String refreshToken = jwtUtils.generateToken(savedUser);
 
