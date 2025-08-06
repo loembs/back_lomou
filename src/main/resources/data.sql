@@ -82,7 +82,7 @@ CREATE INDEX IF NOT EXISTS idx_enabled ON users (enabled);
 
 -- Insérer un utilisateur admin par défaut (mot de passe: admin123)
 INSERT INTO users (email, password, first_name, last_name, role, enabled) VALUES
-    ('admin@loumo.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'Loumo', 'ADMIN', TRUE)
+    ('admin@loumo.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'Admin', 'Loumo', 'ADMIN', TRUE)
     ON CONFLICT (email) DO NOTHING;
 
 -- Insérer quelques utilisateurs clients de test
