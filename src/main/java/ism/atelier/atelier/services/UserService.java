@@ -9,4 +9,6 @@ public interface UserService extends UserDetailsService {
     User createOAuthUser(String email, String firstName, String lastName, String provider, String oauthId);
     User updateLastLogin(Long userId);
     boolean existsByEmail(String email);
+
+    long countUsers();
 }

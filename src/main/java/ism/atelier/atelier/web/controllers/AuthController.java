@@ -13,24 +13,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {
-        "https://loumo-frontend.vercel.app",
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://localhost:8080"
-}, allowedHeaders = "*", methods = {
-        RequestMethod.GET,
-        RequestMethod.POST,
-        RequestMethod.PUT,
-        RequestMethod.DELETE,
-        RequestMethod.OPTIONS,
-        RequestMethod.HEAD,
-        RequestMethod.PATCH
-})
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -40,20 +25,35 @@ public class AuthController {
 
     @GetMapping("/test")
     public ResponseEntity<String> test() {
-        return ResponseEntity.ok()
-                .header("Access-Control-Allow-Origin", "https://loumo-frontend.vercel.app")
-                .header("Access-Control-Allow-Credentials", "true")
-                .body("Auth endpoint is working!");
+        return ResponseEntity.ok("Auth endpoint is working!");
+    }
+
+    @GetMapping("/test-users")
+    public ResponseEntity<String> testUsers() {
+        try {
+            long userCount = userService.countUsers();
+            boolean adminExists = userService.existsByEmail("admin@loumo.com");
+            boolean clientExists = userService.existsByEmail("client1@example.com");
+
+            String response = String.format(
+                    "Total users: %d, Admin exists: %s, Client exists: %s",
+                    userCount, adminExists, clientExists
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.ok("Error checking users: " + e.getMessage());
+        }
     }
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto request) {
-        // Vérifie si l'email existe déjà
+        // Vérifier si l'email existe déjà
         if (userService.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Crée un nouvel utilisateur
+        // Créer un nouvel utilisateur
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
@@ -65,7 +65,7 @@ public class AuthController {
 
         User savedUser = userService.registerUser(user);
 
-        // Génére le token
+        // Générer le token
         String token = jwtUtils.generateToken(savedUser, savedUser.getRole().name());
         String refreshToken = jwtUtils.generateToken(savedUser);
 
