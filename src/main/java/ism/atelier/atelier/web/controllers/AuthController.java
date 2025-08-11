@@ -14,8 +14,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.RequestMethod;
+
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = {
+        "https://loumo-frontend.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://localhost:8080"
+}, allowedHeaders = "*", methods = {
+        RequestMethod.GET,
+        RequestMethod.POST,
+        RequestMethod.PUT,
+        RequestMethod.DELETE,
+        RequestMethod.OPTIONS,
+        RequestMethod.HEAD,
+        RequestMethod.PATCH
+})
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -28,16 +44,41 @@ public class AuthController {
         return ResponseEntity.ok("Auth endpoint is working!");
     }
 
+    @PostMapping("/test-login")
+    public ResponseEntity<?> testLogin(@RequestBody LoginRequestDto request) {
+        try {
+            System.out.println("=== TEST LOGIN REQUEST ===");
+            System.out.println("Email: " + request.getEmail());
+            System.out.println("Password provided: " + (request.getPassword() != null && !request.getPassword().isEmpty()));
+
+            // Vérifier si l'utilisateur existe
+            boolean userExists = userService.existsByEmail(request.getEmail());
+            System.out.println("User exists: " + userExists);
+
+            if (userExists) {
+                User user = userService.findByEmail(request.getEmail());
+                System.out.println("User found: " + user.getEmail() + ", Role: " + user.getRole());
+                return ResponseEntity.ok("{\"message\": \"Utilisateur trouvé\", \"email\": \"" + user.getEmail() + "\", \"role\": \"" + user.getRole() + "\"}");
+            } else {
+                return ResponseEntity.badRequest().body("{\"message\": \"Utilisateur non trouvé\"}");
+            }
+        } catch (Exception e) {
+            System.err.println("Test login error: " + e.getMessage());
+            return ResponseEntity.badRequest().body("{\"message\": \"Erreur: " + e.getMessage() + "\"}");
+        }
+    }
+
     @GetMapping("/test-users")
     public ResponseEntity<String> testUsers() {
         try {
             long userCount = userService.countUsers();
             boolean adminExists = userService.existsByEmail("admin@loumo.com");
-            boolean clientExists = userService.existsByEmail("client1@example.com");
+            boolean client1Exists = userService.existsByEmail("client1@example.com");
+            boolean client2Exists = userService.existsByEmail("client2@example.com");
 
             String response = String.format(
-                    "Total users: %d, Admin exists: %s, Client exists: %s",
-                    userCount, adminExists, clientExists
+                    "Total users: %d, Admin exists: %s, Client1 exists: %s, Client2 exists: %s",
+                    userCount, adminExists, client1Exists, client2Exists
             );
 
             return ResponseEntity.ok(response);
@@ -79,10 +120,34 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginRequestDto request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
         try {
-            System.out.println("Login attempt for email: " + request.getEmail());
+            System.out.println("=== LOGIN REQUEST RECEIVED ===");
+            System.out.println("Request body: " + request);
+            System.out.println("Email: " + request.getEmail());
+            System.out.println("Password length: " + (request.getPassword() != null ? request.getPassword().length() : "null"));
 
+            // Validation des données d'entrée
+            if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+                System.out.println("❌ Email is null or empty");
+                return ResponseEntity.badRequest().body("{\"message\": \"Email requis\"}");
+            }
+
+            if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+                System.out.println("❌ Password is null or empty");
+                return ResponseEntity.badRequest().body("{\"message\": \"Mot de passe requis\"}");
+            }
+
+            // Vérifier si l'utilisateur existe
+            boolean userExists = userService.existsByEmail(request.getEmail());
+            System.out.println("User exists in database: " + userExists);
+
+            if (!userExists) {
+                System.out.println("❌ User not found in database: " + request.getEmail());
+                return ResponseEntity.badRequest().body("{\"message\": \"Email ou mot de passe incorrect\"}");
+            }
+
+            System.out.println("🔐 Attempting authentication...");
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
@@ -107,10 +172,16 @@ public class AuthController {
 
             System.out.println("Login successful for: " + user.getEmail());
             return ResponseEntity.ok(response);
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            System.err.println("❌ Bad credentials for user: " + request.getEmail());
+            return ResponseEntity.badRequest().body("{\"message\": \"Email ou mot de passe incorrect\"}");
+        } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+            System.err.println("❌ Username not found: " + request.getEmail());
+            return ResponseEntity.badRequest().body("{\"message\": \"Email ou mot de passe incorrect\"}");
         } catch (Exception e) {
-            System.err.println("Login error: " + e.getMessage());
+            System.err.println("❌ Login error: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("{\"message\": \"Erreur lors de la connexion\"}");
         }
     }
 
