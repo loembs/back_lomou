@@ -68,6 +68,41 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/test-password")
+    public ResponseEntity<?> testPassword(@RequestBody LoginRequestDto request) {
+        try {
+            System.out.println("=== TEST PASSWORD REQUEST ===");
+            System.out.println("Email: " + request.getEmail());
+            System.out.println("Password: " + request.getPassword());
+
+            // Vérifier si l'utilisateur existe
+            boolean userExists = userService.existsByEmail(request.getEmail());
+            System.out.println("User exists: " + userExists);
+
+            if (userExists) {
+                User user = userService.findByEmail(request.getEmail());
+                System.out.println("User found: " + user.getEmail() + ", Role: " + user.getRole());
+
+                // Tenter l'authentification
+                try {
+                    Authentication authentication = authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    );
+                    System.out.println("✅ Authentification réussie!");
+                    return ResponseEntity.ok("{\"message\": \"Authentification réussie\", \"email\": \"" + user.getEmail() + "\", \"role\": \"" + user.getRole() + "\"}");
+                } catch (Exception authError) {
+                    System.out.println("❌ Échec de l'authentification: " + authError.getMessage());
+                    return ResponseEntity.badRequest().body("{\"message\": \"Échec de l'authentification: " + authError.getMessage() + "\"}");
+                }
+            } else {
+                return ResponseEntity.badRequest().body("{\"message\": \"Utilisateur non trouvé\"}");
+            }
+        } catch (Exception e) {
+            System.err.println("Test password error: " + e.getMessage());
+            return ResponseEntity.badRequest().body("{\"message\": \"Erreur: " + e.getMessage() + "\"}");
+        }
+    }
+
     @GetMapping("/test-users")
     public ResponseEntity<String> testUsers() {
         try {
@@ -267,6 +302,49 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping("/setup-test-users")
+    public ResponseEntity<?> setupTestUsers() {
+        try {
+            System.out.println("=== SETUP TEST USERS ===");
+
+            // Supprimer l'ancien admin s'il existe
+            if (userService.existsByEmail("admin@loumo.com")) {
+                System.out.println("Suppression de l'ancien admin...");
+                // Note: Vous devrez ajouter une méthode deleteByEmail dans UserService
+            }
+
+            // Créer un nouvel admin
+            User adminUser = new User();
+            adminUser.setEmail("admin@loumo.com");
+            adminUser.setPassword("admin123");
+            adminUser.setFirstName("Admin");
+            adminUser.setLastName("Loumo");
+            adminUser.setRole(User.Role.ADMIN);
+
+            User savedAdmin = userService.registerUser(adminUser);
+            System.out.println("✅ Admin créé: " + savedAdmin.getEmail());
+
+            // Créer un utilisateur client de test
+            User clientUser = new User();
+            clientUser.setEmail("test@example.com");
+            clientUser.setPassword("password123");
+            clientUser.setFirstName("Test");
+            clientUser.setLastName("User");
+            clientUser.setRole(User.Role.CLIENT);
+            clientUser.setPhone("+221 77 123 45 67");
+            clientUser.setAddress("Dakar, Sénégal");
+
+            User savedClient = userService.registerUser(clientUser);
+            System.out.println("✅ Client créé: " + savedClient.getEmail());
+
+            return ResponseEntity.ok("{\"message\": \"Utilisateurs de test créés avec succès\", \"admin\": \"" + savedAdmin.getEmail() + "\", \"client\": \"" + savedClient.getEmail() + "\"}");
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de la création des utilisateurs de test: " + e.getMessage());
+            return ResponseEntity.badRequest().body("{\"message\": \"Erreur: " + e.getMessage() + "\"}");
         }
     }
 }
