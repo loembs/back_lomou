@@ -70,6 +70,7 @@ public class SecurityConfig {
         // Autoriser spécifiquement le domaine du frontend
         configuration.setAllowedOrigins(List.of(
                 "https://loumo-frontend.vercel.app",
+                "https://loumo-frontend-kd7v.vercel.app",
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://localhost:8080"
