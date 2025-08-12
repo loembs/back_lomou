@@ -15,9 +15,7 @@ FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 COPY . ./
 RUN chmod +x mvnw
-# Configuration de l'encodage UTF-8 pour Maven
-ENV MAVEN_OPTS="-Dfile.encoding=UTF-8"
-RUN ./mvnw clean package -DskipTests -Dfile.encoding=UTF-8
+RUN ./mvnw clean package -DskipTests
 
 # Étape 2 : image de production
 FROM eclipse-temurin:17-jdk
